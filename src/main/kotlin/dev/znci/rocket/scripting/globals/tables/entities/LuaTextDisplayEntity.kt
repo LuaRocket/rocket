@@ -4,15 +4,25 @@ import dev.znci.rocket.scripting.annotations.Entity
 import dev.znci.rocket.scripting.globals.interfaces.entity.BaseDisplayEntity
 import dev.znci.rocket.util.MessageFormatter
 import dev.znci.twine.annotations.TwineNativeFunction
+import dev.znci.twine.annotations.TwineNativeProperty
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.TextDisplay
 
 @Entity(EntityType.TEXT_DISPLAY)
-class LuaTextDisplayEntity(entity: TextDisplay):
-    BaseDisplayEntity<TextDisplay>(entity) {
-        @TwineNativeFunction
-        fun setText(text: Any) {
-            val messageComponent = MessageFormatter.formatMessage(text.toString())
-            entity.text(messageComponent)
-        }
+@Suppress("unused")
+class LuaTextDisplayEntity(entity: TextDisplay): BaseDisplayEntity<TextDisplay>(entity) {
+    @TwineNativeFunction
+    fun setText(text: Any) {
+        val messageComponent = MessageFormatter.formatMessage(text.toString())
+        entity.text(messageComponent)
     }
+
+    @TwineNativeProperty
+    val lineWidth: Int
+        get() = entity.lineWidth
+
+    @TwineNativeFunction
+    fun setLineWidth(width: Int) {
+        entity.lineWidth = width
+    }
+}

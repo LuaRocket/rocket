@@ -15,15 +15,16 @@
  */
 package dev.znci.rocket.scripting
 
-import dev.znci.rocket.scripting.api.RocketError
 import dev.znci.rocket.scripting.classes.CommandReference
+import dev.znci.twine.TwineEnum
 import dev.znci.twine.TwineLuaValue
 import dev.znci.twine.TwineProperty
 import dev.znci.twine.TwineTable
-import dev.znci.twine.TwineValueBase
+import dev.znci.twine.nativex.conversion.Converter.toLuaValue
 import org.bukkit.event.Event
 import org.luaj.vm2.Globals
 import org.luaj.vm2.LuaError
+import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.jse.JsePlatform
 import java.io.File
@@ -38,6 +39,7 @@ object ScriptManager {
      * This is used to load and execute Lua code with a standard Lua environment.
      */
     private val globals: Globals = JsePlatform.standardGlobals()
+
     /**
      * The folder where scripts are located.
      * This can be set to a custom folder to load Lua scripts from a specific directory.
@@ -56,12 +58,6 @@ object ScriptManager {
      */
     @Suppress("unused")
     val enabledCommands = mutableMapOf<String, CommandReference>()
-
-    /**
-     * A list of global values (properties and tables) that have been registered for Lua scripting.
-     * These globals are made available to Lua scripts during their execution.
-     */
-    var enabledGlobals: MutableList<TwineValueBase> = mutableListOf()
 
     /**
      * Sets the folder where scripts are located.
@@ -127,61 +123,24 @@ object ScriptManager {
     }
 
     /**
-     * Retrieves a global value by its table name.
-     *
-     * @param valueName The name of the global value to retrieve.
-     * @return The global value if found, or `null` if it is not registered.
-     */
-    private fun getGlobalByTableName(valueName: String): TwineValueBase? {
-        return enabledGlobals.find { it.valueName == valueName }
-    }
-
-    /**
-     * Registers a global value, making it available for use in Lua.
-     *
-     * @param global The global value to register.
-     * @throws RocketError If a global with the same table name is already registered.
-     */
-    fun registerGlobal(global: TwineValueBase) {
-        if (getGlobalByTableName(global.valueName) != null) {
-            throw RocketError("A global of the same table name ('${global.valueName}') is already registered.")
-        }
-
-        if (global.valueName.isEmpty()) {
-            throw RocketError("Global table name cannot be empty.")
-        }
-
-        enabledGlobals.add(global)
-    }
-
-    /**
-     * Unregisters a global value, making it unavailable for use in Lua.
-     *
-     * @param global The global value to unregister.
-     * @throws RocketError If no global with the given table name is registered.
-     */
-
-    @Suppress("unused")
-    fun unregisterGlobal(global: TwineValueBase) {
-        if (getGlobalByTableName(global.valueName) == null) {
-            throw RocketError("A global with the table name ('${global.valueName}') is not registered and cannot be unregistered.")
-        }
-
-        enabledGlobals.remove(global)
-    }
-
-    /**
      * Applies the registered global values to the Lua environment.
      * This makes all registered globals available to Lua scripts.
      */
     private fun applyGlobals() {
-        enabledGlobals.forEach {
-            when (it) {
+        GlobalRegistry.enabledGlobals.forEach { (_, global) ->
+            when (global) {
+                is TwineEnum -> {
+                    global.table = global.toLuaTable()
+                    global.table = global.toLuaValue() as LuaTable
+
+                    globals.set(global.valueName, global.table)
+                }
                 is TwineTable -> {
-                    globals.set(it.valueName, it.table)
+                    val table = global.toLuaValue()
+                    globals.set(global.valueName, table)
                 }
                 is TwineProperty -> {
-                    globals.set(it.valueName, TwineLuaValue.valueOf(it.value))
+                    globals.set(global.valueName, TwineLuaValue.valueOf(global.value))
                 }
             }
         }

@@ -15,8 +15,9 @@
  */
 package dev.znci.rocket.scripting.api
 
-import dev.znci.rocket.scripting.ScriptManager
+import dev.znci.rocket.scripting.GlobalRegistry
 import dev.znci.rocket.scripting.annotations.Global
+import dev.znci.twine.TwineEnum
 import dev.znci.twine.TwineValueBase
 import org.bukkit.plugin.java.JavaPlugin
 import org.reflections.Reflections
@@ -43,8 +44,18 @@ open class RocketAddon : JavaPlugin() {
         val allTypes = reflections.getSubTypesOf(Any::class.java)
         globalClasses.forEach { globalClass ->
             if (TwineValueBase::class.java.isAssignableFrom(globalClass)) {
-                val instance = globalClass.getDeclaredConstructor().newInstance() as TwineValueBase
-                ScriptManager.registerGlobal(instance)
+                val baseInstance = globalClass.getDeclaredConstructor().newInstance()
+
+                if (baseInstance is TwineEnum) {
+                    val enumName = baseInstance.valueName
+
+                    if (enumName.firstOrNull()?.isLowerCase() == true) {
+                        val expected = enumName.replaceFirstChar { it.uppercaseChar() }
+                        throw RocketError("Enum \"$enumName\" must begin with a capital. Got: \"$enumName\", expected: \"$expected\"")
+                    }
+                }
+
+                GlobalRegistry.registerGlobal(baseInstance as TwineValueBase)
             } else {
                 throw RocketError("@Global annotated class \"${globalClass.name}\" does not extend TwineValueBase.")
             }

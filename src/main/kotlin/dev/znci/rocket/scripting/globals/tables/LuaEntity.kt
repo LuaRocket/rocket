@@ -35,6 +35,6 @@ class LuaEntities : TwineNative("entity") {
         val constructor = wrapperClass.primaryConstructor
             ?: throw RocketError("Wrapper class ${wrapperClass.simpleName} has no primary constructor")
 
-        return constructor.call(bukkitEntity) as RocketEntity<*>
+        return constructor.call(bukkitEntity)
     }
 }

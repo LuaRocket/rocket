@@ -1,7 +1,8 @@
 package dev.znci.rocket.scripting.globals.interfaces.entity
 
-import dev.znci.rocket.scripting.api.RocketError
 import dev.znci.rocket.scripting.classes.BaseLuaEntity
+import dev.znci.rocket.scripting.globals.enums.LuaBillboard
+import dev.znci.twine.TwineEnumValue
 import dev.znci.twine.annotations.TwineNativeFunction
 import dev.znci.twine.annotations.TwineNativeProperty
 import org.bukkit.Color
@@ -77,19 +78,15 @@ interface Display<T> : Entity<T> where T: org.bukkit.entity.Display {
     val interpolationDelay: Int
         get() = entity.interpolationDelay
 
-    // TODO: Implement Billboard
     @TwineNativeFunction
-    fun setBillboard(billboard: String) {
-        var billboardValue = org.bukkit.entity.Display.Billboard.CENTER
+    fun setBillboard(billboard: TwineEnumValue) {
+        val luaBillboard = LuaBillboard()
+        if (luaBillboard.isValidValue(billboard) != true) return
 
-        billboardValue = when (billboard.lowercase()) {
-            "vertical" -> org.bukkit.entity.Display.Billboard.VERTICAL
-            "horizontal" -> org.bukkit.entity.Display.Billboard.HORIZONTAL
-            "fixed" -> org.bukkit.entity.Display.Billboard.FIXED
-            else -> throw RocketError("Invalid billboard value. (center/vertical/horizontal/fixed), got ${billboard.lowercase()}")
+        var billboardValue = luaBillboard.getEnumValue(billboard.ordinal) as? org.bukkit.entity.Display.Billboard
+        if (billboardValue != null) {
+            entity.billboard = billboardValue
         }
-
-        entity.billboard = billboardValue
     }
 
     @TwineNativeProperty
