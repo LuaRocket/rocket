@@ -74,7 +74,6 @@ open class Rocket : RocketAddon() {
 
         // Register Entities
         EntityRegistry.autoRegisterEntities()
-        println(EntityRegistry.registry)
 
         // Load addons after Rocket, but before loading scripts
         val addons = AddonManager.getAddons()
