@@ -68,7 +68,7 @@ class LuaVector3(
 
     @TwineNativeFunction
     fun clone(): LuaVector3 {
-        return bukkitVector.toLuaVector3()
+        return bukkitVector.toLua()
     }
 
     @TwineNativeFunction
@@ -76,7 +76,7 @@ class LuaVector3(
         // TODO: Evaluate whether getCrossProduct or crossProduct is better here
         return bukkitVector.getCrossProduct(
             comparedVector.bukkitVector
-        ).toLuaVector3()
+        ).toLua()
     }
 
     @TwineNativeFunction
@@ -96,13 +96,13 @@ class LuaVector3(
     fun divide(comparedVector: LuaVector3): LuaVector3 {
         return bukkitVector.divide(
             comparedVector.bukkitVector
-        ).toLuaVector3()
+        ).toLua()
     }
 
     @TwineNativeFunction
     @TwineOverload
     fun divide(x: Double, y: Double, z: Double): LuaVector3 {
-        return bukkitVector.divide(Vector(x, y, z)).toLuaVector3()
+        return bukkitVector.divide(Vector(x, y, z)).toLua()
     }
 
     @TwineNativeFunction
@@ -122,13 +122,13 @@ class LuaVector3(
     fun multiply(comparedVector: LuaVector3): LuaVector3 {
         return bukkitVector.multiply(
             comparedVector.bukkitVector
-        ).toLuaVector3()
+        ).toLua()
     }
 
     @TwineNativeFunction
     @TwineOverload
     fun multiply(x: Double, y: Double, z: Double): LuaVector3 {
-        return bukkitVector.multiply(Vector(x, y, z)).toLuaVector3()
+        return bukkitVector.multiply(Vector(x, y, z)).toLua()
     }
 
     @TwineNativeFunction
@@ -148,13 +148,13 @@ class LuaVector3(
     fun subtract(comparedVector: LuaVector3): LuaVector3 {
         return bukkitVector.subtract(
             comparedVector.bukkitVector
-        ).toLuaVector3()
+        ).toLua()
     }
 
     @TwineNativeFunction
     @TwineOverload
     fun subtract(x: Double, y: Double, z: Double): LuaVector3 {
-        return bukkitVector.subtract(Vector(x, y, z)).toLuaVector3()
+        return bukkitVector.subtract(Vector(x, y, z)).toLua()
     }
 
     @TwineNativeFunction
@@ -185,7 +185,7 @@ class LuaVector3(
     fun midpoint(comparedVector: LuaVector3): LuaVector3 {
         return bukkitVector.getMidpoint(
             comparedVector.bukkitVector
-        ).toLuaVector3()
+        ).toLua()
     }
 
     @TwineNativeFunction
@@ -202,19 +202,19 @@ class LuaVector3(
     fun rotateAround(comparedVector: LuaVector3, angle: Double): LuaVector3 {
         return this.bukkitVector.rotateAroundAxis(
             comparedVector.bukkitVector, angle
-        ).toLuaVector3()
+        ).toLua()
     }
 
     @TwineNativeFunction
     fun normalize(): LuaVector3 {
-        return bukkitVector.normalize().toLuaVector3()
+        return bukkitVector.normalize().toLua()
     }
 
     @TwineNativeProperty("magnitude")
     val magnitude: Double
         get() = bukkitVector.length()
 
-    fun toBukkit(): Vector {
+    fun to(): Vector {
         return bukkitVector
     }
 
@@ -241,20 +241,24 @@ class LuaVector3(
 
     @TwineNativeFunction
     override fun toString(): String {
-        return "vector3($xProperty, $yProperty, $zProperty)"
+        return "vector3[x=$xProperty, y=$yProperty, z=$zProperty]"
     }
 
     companion object {
-        fun fromBukkit(vector: Vector): LuaVector3 {
+        fun Vector.toLua(): LuaVector3 {
             return LuaVector3(
-                vector.x,
-                vector.y,
-                vector.z
+                this.x,
+                this.y,
+                this.z
             )
         }
+    }
 
-        fun Vector.toLuaVector3(): LuaVector3 {
-            return LuaVector3.fromBukkit(this)
-        }
+    fun toJava(): Vector {
+        return Vector(
+            this.xProperty,
+            this.yProperty,
+            this.zProperty
+        )
     }
 }

@@ -17,6 +17,7 @@ package dev.znci.rocket.scripting.globals.tables
 
 import dev.znci.rocket.scripting.PermissionsManager
 import dev.znci.rocket.scripting.annotations.Global
+import dev.znci.rocket.scripting.globals.tables.LuaLocation.Companion.toLua
 import dev.znci.rocket.util.MessageFormatter
 import dev.znci.twine.nativex.TwineNative
 import dev.znci.twine.TwineTable
@@ -150,7 +151,7 @@ class LuaPlayer(
 
     @TwineNativeFunction
     fun teleport(location: LuaLocation): Boolean {
-        player.teleport(location.toBukkit())
+        player.teleport(location.toJava())
         return true
     }
 
@@ -173,7 +174,7 @@ class LuaPlayer(
     @TwineNativeProperty
     override val location: LuaLocation
         get() {
-            return LuaLocation.fromBukkit(player.location)
+            return player.location.toLua()
         }
 
 
@@ -234,7 +235,7 @@ class LuaPlayer(
 
     @TwineNativeProperty
     val targetBlockLocation
-        get() = LuaLocation.fromBukkit(targetBlock?.location!!)
+        get() = targetBlock?.location!!.toLua()
 
     @TwineNativeProperty
     val targetBlockLightLevel
@@ -275,11 +276,7 @@ open class LuaOfflinePlayer(
     open val location: LuaLocation?
         get() {
             val location = offlinePlayer.location
-            return if (location != null) {
-                LuaLocation.fromBukkit(location)
-            } else {
-                null
-            }
+            return location?.toLua()
         }
 
     @TwineNativeProperty

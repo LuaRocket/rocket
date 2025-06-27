@@ -3,6 +3,7 @@ package dev.znci.rocket.scripting.globals.interfaces.entity
 import dev.znci.rocket.scripting.api.RocketError
 import dev.znci.rocket.scripting.globals.interfaces.attribute.Attributable
 import dev.znci.rocket.scripting.globals.tables.LuaLocation
+import dev.znci.rocket.scripting.globals.tables.LuaLocation.Companion.toLua
 import dev.znci.twine.annotations.TwineNativeFunction
 import dev.znci.twine.annotations.TwineNativeProperty
 import dev.znci.twine.annotations.TwineOverload
@@ -18,7 +19,7 @@ interface LivingEntity<T> : Frictional<T>, Attributable<T>, Damageable<T>, Entit
 
     @TwineNativeProperty
     val eyeLocation: LuaLocation
-        get() = LuaLocation.fromBukkit(entity.eyeLocation)
+        get() = entity.eyeLocation.toLua()
 
     // TODO: Implement Block
 
@@ -167,7 +168,7 @@ interface LivingEntity<T> : Frictional<T>, Attributable<T>, Damageable<T>, Entit
     @TwineOverload
     @TwineNativeFunction
     fun hasLineOfSight(location: LuaLocation): Boolean {
-        return entity.hasLineOfSight(location.toBukkit())
+        return entity.hasLineOfSight(location.toJava())
     }
 
     @TwineNativeProperty

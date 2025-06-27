@@ -109,20 +109,25 @@ class LuaLocation(
         }
     }
 
+    @TwineNativeFunction
+    override fun toString(): String {
+        return "location[x=${this.xProperty}, y=${this.yProperty}, z=${this.zProperty}, world=${this.world?.uid}, yaw=${this.yawProperty}, pitch=${this.pitchProperty}]"
+    }
+
     companion object {
-        fun fromBukkit(location: Location): LuaLocation {
+        fun Location.toLua(): LuaLocation {
             return LuaLocation(
-                location.x,
-                location.y,
-                location.z,
-                location.world.uid.toString(),
-                location.yaw,
-                location.pitch
+                this.x,
+                this.y,
+                this.z,
+                this.world.uid.toString(),
+                this.yaw,
+                this.pitch
             )
         }
     }
 
-    fun toBukkit(): Location {
+    fun toJava(): Location {
         return try {
             val x = this.xProperty
             val y = this.yProperty

@@ -14,13 +14,11 @@ interface Damageable<T> where T: Damageable {
     }
 
     @TwineNativeProperty
-    val health: Double
+    var health: Double
         get() = entity.health
-
-    @TwineNativeFunction
-    fun setHealth(health: Double) {
-        entity.health = health
-    }
+        set(value) {
+            entity.health = value
+        }
 
     @TwineNativeFunction
     fun heal(health: Double) {
@@ -28,11 +26,9 @@ interface Damageable<T> where T: Damageable {
     }
 
     @TwineNativeProperty
-    val absorptionAmount: Double
+    var absorptionAmount: Double
         get() = entity.absorptionAmount
-
-    @TwineNativeFunction
-    fun setAbsorptionAmount(amount: Double) {
-        entity.absorptionAmount = amount
-    }
+        set(value) {
+            entity.absorptionAmount = value
+        }
 }

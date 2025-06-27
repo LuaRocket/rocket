@@ -1,30 +1,26 @@
 package dev.znci.rocket.scripting.globals.interfaces.entity
 
-import dev.znci.twine.annotations.TwineNativeFunction
 import dev.znci.twine.annotations.TwineNativeProperty
+import org.bukkit.entity.Ageable
 
 @Suppress("unused")
-interface Ageable<T>: Creature<T> where T: org.bukkit.entity.Ageable {
+interface Ageable<T> : Creature<T> where T : Ageable {
+
     @TwineNativeProperty
-    val age: Int
+    var age: Int
         get() = entity.age
-
-    @TwineNativeFunction
-    fun setAge(age: Int) {
-        entity.age = age
-    }
-
-    @TwineNativeFunction
-    fun setBaby() {
-        entity.setBaby()
-    }
-
-    @TwineNativeFunction
-    fun setAdult() {
-        entity.setAdult()
-    }
+        set(value) {
+            entity.age = value
+        }
 
     @TwineNativeProperty
-    val adult: Boolean
+    var adult: Boolean
         get() = entity.isAdult
+        set(value) {
+            if (value) {
+                entity.setAdult()
+            } else {
+                entity.setBaby()
+            }
+        }
 }

@@ -1,7 +1,9 @@
 package dev.znci.rocket.scripting.globals.interfaces.entity
 
 import dev.znci.rocket.scripting.globals.tables.LuaLocation
+import dev.znci.rocket.scripting.globals.tables.LuaLocation.Companion.toLua
 import dev.znci.rocket.scripting.globals.tables.LuaVector3
+import dev.znci.rocket.scripting.globals.tables.LuaVector3.Companion.toLua
 import dev.znci.twine.annotations.TwineNativeFunction
 import dev.znci.twine.annotations.TwineNativeProperty
 import dev.znci.twine.annotations.TwineOverload
@@ -14,16 +16,12 @@ interface Entity<T> where T : Entity {
 
     @TwineNativeProperty
     val location: LuaLocation
-        get() = LuaLocation.fromBukkit(entity.location)
-
-    @TwineNativeFunction
-    fun setVelocity(vector: LuaVector3) {
-        entity.velocity = vector.toBukkit()
-    }
+        get() = entity.location.toLua()
 
     @TwineNativeProperty
-    val velocity: LuaVector3
-        get() = LuaVector3.fromBukkit(entity.velocity)
+    var velocity: LuaVector3
+        get() = entity.velocity.toLua()
+        set(value) { entity.setVelocity(value.toJava()) }
 
     @TwineNativeProperty
     val height: Double
@@ -53,6 +51,8 @@ interface Entity<T> where T : Entity {
     val inWorld: Boolean
         get() = entity.isInWorld
 
+    // TODO: Figure out what to do with this setter function
+    // Maybe a Vector2 or a Rotation
     @TwineNativeFunction
     fun setRotation(yaw: Float, pitch: Float) {
         entity.setRotation(yaw, pitch)
@@ -60,7 +60,7 @@ interface Entity<T> where T : Entity {
 
     @TwineNativeFunction
     fun teleport(location: LuaLocation) {
-        entity.teleport(location.toBukkit())
+        entity.teleport(location.toJava())
     }
 
     // TODO: Implement LookAnchor!!
@@ -73,7 +73,7 @@ interface Entity<T> where T : Entity {
     @TwineOverload
     @TwineNativeFunction
     fun lookAt(vector: LuaVector3) {
-        val bukkitVector = vector.toBukkit()
+        val bukkitVector = vector.toJava()
         entity.lookAt(bukkitVector.x, bukkitVector.y, bukkitVector.z, LookAnchor.EYES)
     }
 
@@ -82,72 +82,48 @@ interface Entity<T> where T : Entity {
         get() = entity.entityId
 
     @TwineNativeProperty
-    val fireTicks: Int
+    var fireTicks: Int
         get() = entity.fireTicks
+        set(value) { entity.fireTicks = value }
 
     @TwineNativeProperty
     val maxFireTicks: Int
         get() = entity.maxFireTicks
 
-    @TwineNativeFunction
-    fun setFireTicks(ticks: Int) {
-        entity.fireTicks = ticks
-    }
-
-    @TwineNativeFunction
-    fun setVisualFire(visible: Boolean) {
-        entity.isVisualFire = visible
-    }
-
     @TwineNativeProperty
-    val visualFire: Boolean
+    var visualFire: Boolean
         get() = entity.isVisualFire
+        set(value) { entity.isVisualFire = value }
 
     @TwineNativeProperty
-    val freezeTicks: Int
+    var freezeTicks: Int
         get() = entity.freezeTicks
+        set(value) { entity.freezeTicks = value }
 
     @TwineNativeProperty
     val maxFreezeTicks: Int
         get() = entity.maxFreezeTicks
 
-    @TwineNativeFunction
-    fun setFreezeTicks(ticks: Int) {
-        entity.freezeTicks = ticks
-    }
-
     @TwineNativeProperty
     val frozen: Boolean
         get() = entity.isFrozen
 
-    @TwineNativeFunction
-    fun setInvisible(invisible: Boolean) {
-        entity.isInvisible = invisible
-    }
-
     @TwineNativeProperty
-    val invisible: Boolean
+    var invisible: Boolean
         get() = entity.isInvisible
-
-    @TwineNativeFunction
-    fun setNoPhysics(noPhysics: Boolean) {
-        entity.setNoPhysics(noPhysics)
-    }
+        set(value) { entity.isInvisible = value }
 
     // noPhysics property is strange, surely it would make more sense to be physics
     // boolean hasNoPhysics();
     @TwineNativeProperty
-    val physics: Boolean
+    var physics: Boolean
         get() = !entity.hasNoPhysics()
+        set(value) { entity.setNoPhysics(!value) }
 
     @TwineNativeProperty
-    val freezeTickingLocked: Boolean
+    var freezeTickingLocked: Boolean
         get() = entity.isFreezeTickingLocked
-
-    @TwineNativeFunction
-    fun setFreezeTickLocked(locked: Boolean) {
-        entity.lockFreezeTicks(locked)
-    }
+        set(value) { entity.lockFreezeTicks(value) }
 
     @TwineNativeFunction
     fun remove() {
@@ -163,13 +139,9 @@ interface Entity<T> where T : Entity {
         get() = entity.isValid
 
     @TwineNativeProperty
-    val persistent: Boolean
+    var persistent: Boolean
         get() = entity.isPersistent
-
-    @TwineNativeFunction
-    fun setPersistent(persistent: Boolean) {
-        entity.isPersistent = persistent
-    }
+        set(value) { entity.isPersistent = value }
 
     // TODO: Implement passengers
 
@@ -183,13 +155,9 @@ interface Entity<T> where T : Entity {
     }
 
     @TwineNativeProperty
-    val fallDistance: Float
+    var fallDistance: Float
         get() = entity.fallDistance
-
-    @TwineNativeFunction
-    fun setFallDistance(distance: Float) {
-        entity.fallDistance = distance
-    }
+        set(value) { entity.fallDistance = value }
 
     // TODO: Implement EntityDamageEvent
 
@@ -198,13 +166,9 @@ interface Entity<T> where T : Entity {
         get() = entity.uniqueId.toString()
 
     @TwineNativeProperty
-    val ticksLived: Int
+    var ticksLived: Int
         get() = entity.ticksLived
-
-    @TwineNativeFunction
-    fun setTicksLived(ticks: Int) {
-        entity.ticksLived = ticks
-    }
+        set(value) { entity.ticksLived = value }
 
     // TODO: Implement EntityEffect
 
@@ -225,70 +189,42 @@ interface Entity<T> where T : Entity {
     val vehicle: dev.znci.rocket.scripting.globals.interfaces.entity.Entity<T>?
         get() = entity.vehicle as? dev.znci.rocket.scripting.globals.interfaces.entity.Entity<T>
 
-    @TwineNativeFunction
-    fun setNameTagVisible(visible: Boolean) {
-        entity.isCustomNameVisible = visible
-    }
-
     @TwineNativeProperty
-    val nameTagVisible: Boolean
+    var nameTagVisible: Boolean
         get() = entity.isCustomNameVisible
-
-    @TwineNativeFunction
-    fun setVisibleByDefault(visible: Boolean) {
-        entity.isVisibleByDefault = visible
-    }
+        set(value) { entity.isCustomNameVisible = value }
 
     @TwineNativeProperty
-    val visibleByDefault: Boolean
+    var visibleByDefault: Boolean
         get() = entity.isVisibleByDefault
+        set(value) { entity.isVisibleByDefault = value }
 
     // TODO: Implement @NotNull Set<Player> getTrackedBy();
 
-    @TwineNativeFunction
-    fun setGlowing(glowing: Boolean) {
-        entity.isGlowing = glowing
-    }
-
     @TwineNativeProperty
-    val glowing: Boolean
+    var glowing: Boolean
         get() = entity.isGlowing
-
-    @TwineNativeFunction
-    fun setInvulnerable(invulnerable: Boolean) {
-        entity.isInvulnerable = invulnerable
-    }
+        set(value) { entity.isGlowing = value }
 
     @TwineNativeProperty
-    val invulnerable: Boolean
+    var invulnerable: Boolean
         get() = entity.isInvulnerable
-
-    @TwineNativeFunction
-    fun setSilent(silent: Boolean) {
-        entity.isSilent = silent
-    }
+        set(value) { entity.isInvulnerable = value }
 
     @TwineNativeProperty
-    val silent: Boolean
+    var silent: Boolean
         get() = entity.isSilent
-
-    @TwineNativeFunction
-    fun setGravity(gravity: Boolean) {
-        entity.setGravity(gravity)
-    }
+        set(value) { entity.isSilent = value }
 
     @TwineNativeProperty
-    val gravityEnabled: Boolean
+    var gravityEnabled: Boolean
         get() = entity.hasGravity()
-
-    @TwineNativeFunction
-    fun setPortalCooldown(ticks: Int) {
-        entity.portalCooldown = ticks
-    }
+        set(value) { entity.setGravity(value) }
 
     @TwineNativeProperty
-    val portalCooldown: Int
+    var portalCooldown: Int
         get() = entity.portalCooldown
+        set(value) { entity.portalCooldown = value }
 
     @TwineNativeProperty
     val scoreboardTags: Set<String>
@@ -315,13 +251,9 @@ interface Entity<T> where T : Entity {
         get() = entity.hasFixedPose()
 
     @TwineNativeProperty
-    val sneaking: Boolean
+    var sneaking: Boolean
         get() = entity.isSneaking
-
-    @TwineNativeFunction
-    fun setSneaking(sneaking: Boolean) {
-        entity.isSneaking = sneaking
-    }
+        set(value) { entity.isSneaking = value }
 
     // TODO: Implement SpawnCategory
 
@@ -340,7 +272,7 @@ interface Entity<T> where T : Entity {
 
     @TwineNativeProperty
     val origin: LuaLocation
-        get() = LuaLocation.fromBukkit(entity.origin!!)
+        get() = entity.origin!!.toLua()
 
     @TwineNativeProperty
     val fromSpawner: Boolean
@@ -385,7 +317,7 @@ interface Entity<T> where T : Entity {
 
     @TwineNativeFunction
     fun spawnAt(location: LuaLocation) {
-        entity.spawnAt(location.toBukkit())
+        entity.spawnAt(location.toJava())
     }
 
     @TwineNativeProperty
@@ -394,7 +326,7 @@ interface Entity<T> where T : Entity {
 
     @TwineNativeFunction
     fun doesCollideAt(location: LuaLocation): Boolean {
-        return entity.collidesAt(location.toBukkit())
+        return entity.collidesAt(location.toJava())
     }
     
     // TODO: Implement BoundingBox

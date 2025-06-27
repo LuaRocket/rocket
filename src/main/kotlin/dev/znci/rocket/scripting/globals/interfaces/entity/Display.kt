@@ -1,7 +1,7 @@
 package dev.znci.rocket.scripting.globals.interfaces.entity
 
 import dev.znci.rocket.scripting.classes.BaseLuaEntity
-import dev.znci.rocket.scripting.globals.enums.LuaBillboard
+import dev.znci.twine.TwineEnum.Companion.toLua
 import dev.znci.twine.TwineEnumValue
 import dev.znci.twine.annotations.TwineNativeFunction
 import dev.znci.twine.annotations.TwineNativeProperty
@@ -14,84 +14,63 @@ abstract class BaseDisplayEntity<T : org.bukkit.entity.Display>(entity: T):
 @Suppress("unused")
 interface Display<T> : Entity<T> where T: org.bukkit.entity.Display {
     // TODO: Implement Transformation
-
-    @TwineNativeFunction
-    fun setInterpolationDuration(ticks: Int) {
-        entity.interpolationDuration = ticks
-    }
-
     @TwineNativeProperty
-    val interpolationDuration: Int
+    var interpolationDuration: Int
         get() = entity.interpolationDuration
-
-    @TwineNativeFunction
-    fun setTeleportDuration(ticks: Int) {
-        entity.teleportDuration = ticks
-    }
-
-    @TwineNativeProperty
-    val teleportDuration: Int
-        get() = entity.teleportDuration
-
-    @TwineNativeFunction
-    fun setViewRange(range: Float) {
-        entity.viewRange = range
-    }
-
-    @TwineNativeProperty
-    val viewRange: Float
-        get() = entity.viewRange
-
-    @TwineNativeFunction
-    fun setShadowRadius(radius: Float) {
-        entity.shadowRadius = radius
-    }
-
-    @TwineNativeProperty
-    val shadowRadius: Float
-        get() = entity.shadowRadius
-
-    @TwineNativeFunction
-    fun setWidth(width: Float) {
-        entity.displayWidth = width
-    }
-
-    @TwineNativeProperty
-    val displayWidth: Float
-        get() = entity.displayWidth
-
-    @TwineNativeFunction
-    fun setHeight(height: Float) {
-        entity.displayHeight
-    }
-
-    @TwineNativeProperty
-    val displayHeight: Float
-        get() = entity.displayHeight
-
-    @TwineNativeFunction
-    fun setInterpolationDelay(ticks: Int) {
-        entity.interpolationDelay = ticks
-    }
-
-    @TwineNativeProperty
-    val interpolationDelay: Int
-        get() = entity.interpolationDelay
-
-    @TwineNativeFunction
-    fun setBillboard(billboard: TwineEnumValue) {
-        val luaBillboard = LuaBillboard()
-        if (luaBillboard.isValidValue(billboard) != true) return
-
-        var billboardValue = luaBillboard.getEnumValue(billboard.ordinal) as? org.bukkit.entity.Display.Billboard
-        if (billboardValue != null) {
-            entity.billboard = billboardValue
+        set(value) {
+            entity.interpolationDuration = value
         }
-    }
 
     @TwineNativeProperty
-    val billboard: String
-        get() = entity.billboard.toString()
+    var teleportDuration: Int
+        get() = entity.teleportDuration
+        set(value) {
+            entity.teleportDuration = value
+        }
+
+    @TwineNativeProperty
+    var viewRange: Float
+        get() = entity.viewRange
+        set(value) {
+            entity.viewRange = value
+        }
+
+    @TwineNativeProperty
+    var shadowRadius: Float
+        get() = entity.shadowRadius
+        set(value) {
+            entity.shadowRadius = value
+        }
+
+    @TwineNativeProperty
+    var displayWidth: Float
+        get() = entity.displayWidth
+        set(value) {
+            entity.displayWidth = value
+        }
+
+    @TwineNativeProperty
+    var displayHeight: Float
+        get() = entity.displayHeight
+        set(value) {
+            entity.displayHeight = value
+        }
+
+    @TwineNativeProperty
+    var interpolationDelay: Int
+        get() = entity.interpolationDelay
+        set(value) {
+            entity.interpolationDelay = value
+        }
+
+    @TwineNativeProperty
+    var billboard: TwineEnumValue
+        get() {
+            return entity.billboard.toLua()
+        }
+        set(value) {
+            entity.billboard = value.toJava() as org.bukkit.entity.Display.Billboard
+        }
 
     // TODO: Implement colors
     @TwineNativeFunction
