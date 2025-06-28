@@ -2,10 +2,9 @@ package dev.znci.rocket.scripting.globals.interfaces.entity
 
 import dev.znci.rocket.scripting.classes.BaseLuaEntity
 
-@Suppress("unused")
-abstract class BaseMobEntity<T : org.bukkit.entity.Mob>(entity: T):
+abstract class BaseAmbientEntity<T : org.bukkit.entity.Ambient>(entity: T) :
     BaseLuaEntity<T>(entity),
-    Mob<T>
+    Ambient<T>
 
 @Suppress("unused")
-interface Mob<T> : LivingEntity<T> where T: org.bukkit.entity.Mob
+interface Ambient<T> : Mob<T> where T: org.bukkit.entity.Ambient

@@ -11,9 +11,9 @@ import dev.znci.twine.annotations.TwineNativeProperty
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.TextDisplay
 
-@Entity(EntityType.TEXT_DISPLAY)
 @Suppress("unused")
-class LuaTextDisplayEntity(entity: TextDisplay): BaseDisplayEntity<TextDisplay>(entity) {
+@Entity(EntityType.TEXT_DISPLAY)
+class TextDisplay(entity: TextDisplay): BaseDisplayEntity<TextDisplay>(entity) {
     @TwineNativeProperty
     var text: String
         get() = entity.text().toString()

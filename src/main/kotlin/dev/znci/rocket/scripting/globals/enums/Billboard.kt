@@ -14,4 +14,4 @@ enum class Billboard(val bukkitValue: Display.Billboard) {
 
 @Global
 @Suppress("unused")
-class LuaBillboard : TwineEnum(Billboard::class) {}
+class LuaBillboard : TwineEnum(Billboard::class)

@@ -19,6 +19,8 @@ import dev.znci.rocket.scripting.PermissionsManager
 import dev.znci.rocket.scripting.annotations.Global
 import dev.znci.rocket.scripting.globals.tables.LuaLocation.Companion.toLua
 import dev.znci.rocket.util.MessageFormatter
+import dev.znci.twine.TwineEnum.Companion.toLua
+import dev.znci.twine.TwineEnumValue
 import dev.znci.twine.nativex.TwineNative
 import dev.znci.twine.TwineTable
 import dev.znci.twine.annotations.TwineNativeFunction
@@ -123,11 +125,12 @@ class LuaPlayer(
         return true
     }
 
-    @TwineNativeFunction
-    fun setPlayerTime(value: Long, relative: Boolean): Boolean {
-        player.setPlayerTime(value, relative)
-        return true
-    }
+    @TwineNativeProperty
+    var playerTime: Long
+        get() = player.playerTime
+        set(value) {
+            player.setPlayerTime(value, false)
+        }
 
     @TwineNativeFunction
     fun addPermission(value: String): Boolean {
@@ -165,18 +168,29 @@ class LuaPlayer(
         return PermissionsManager.isPlayerInGroup(player, value)
     }
 
-    @TwineNativeFunction
-    fun setGamemode(value: String): Boolean {
-        player.gameMode = GameMode.valueOf(value)
-        return true
-    }
+    @TwineNativeProperty
+    var gamemode: TwineEnumValue
+        get() {
+            return player.gameMode.toLua()
+        }
+        set(value) {
+            player.gameMode = value.toJava() as GameMode
+        }
+
+//    @TwineNativeFunction
+//    fun give(item: LuaItem) {
+//        val itemStack = item.toJava()
+//        player.inventory.addItem(itemStack)
+//    }
 
     @TwineNativeProperty
-    override val location: LuaLocation
+    override var location: LuaLocation
         get() {
             return player.location.toLua()
         }
-
+        set(value) {
+            player.teleport(value.toJava())
+        }
 
     @TwineNativeProperty
     override val name: String
