@@ -33,8 +33,8 @@ class TextDisplay(entity: TextDisplay): BaseDisplayEntity<TextDisplay>(entity) {
         set(value) { entity.backgroundColor = value.toJava() }
 
     @TwineNativeProperty
-    var textOpacity: Double
-        get() = entity.textOpacity.toDouble()
+    var textOpacity: Int
+        get() = entity.textOpacity.toInt()
         set(value) { entity.textOpacity = value.toInt().toByte() }
 
     @TwineNativeProperty
