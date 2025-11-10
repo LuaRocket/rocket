@@ -20,7 +20,13 @@ enum class DyeColor(val bukkitValue: org.bukkit.DyeColor) {
     BROWN(org.bukkit.DyeColor.BROWN),
     GREEN(org.bukkit.DyeColor.GREEN),
     RED(org.bukkit.DyeColor.RED),
-    BLACK(org.bukkit.DyeColor.BLACK)
+    BLACK(org.bukkit.DyeColor.BLACK);
+
+    companion object {
+        fun fromBukkit(type: org.bukkit.DyeColor): DyeColor =
+            DyeColor.entries.firstOrNull { it.bukkitValue == type }
+                ?: error("Unknown Bukkit DyeColor: $type")
+    }
 }
 
 @Global

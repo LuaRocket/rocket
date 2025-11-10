@@ -25,6 +25,8 @@ object EntityRegistry {
             val entityAnnotation = clazz.getAnnotation(Entity::class.java)
             val entityTypeName = entityAnnotation.entity.name.lowercase()
 
+            println("REGISTERING $entityTypeName")
+
             @Suppress("UNCHECKED_CAST")
             register(entityTypeName, clazz.kotlin as KClass<out RocketEntity<*>>)
         }

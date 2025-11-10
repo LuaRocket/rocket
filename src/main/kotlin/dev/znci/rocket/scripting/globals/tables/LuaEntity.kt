@@ -30,7 +30,7 @@ class LuaEntities : TwineNative("entity") {
         val bukkitEntity = world.spawn(world.spawnLocation.add(0.0, 20.0, 0.0), entityClass)
 
         val wrapperClass = EntityRegistry.getWrapper(bukkitType.name)
-            ?: throw RocketError("No Lua wrapper registered for entity type: $entityType")
+            ?: throw RocketError("No Lua wrapper registered for entity type: ${entityType.name}")
 
         val constructor = wrapperClass.primaryConstructor
             ?: throw RocketError("Wrapper class ${wrapperClass.simpleName} has no primary constructor")
